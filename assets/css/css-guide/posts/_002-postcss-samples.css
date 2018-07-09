@@ -1,0 +1,154 @@
+
+/* similar to %ex-002-simple-button in scss . this can now be reused */
+@define-placeholder ex-002-simple-button {
+	border-style: solid;
+	border-width: 1px;
+	background: linear-gradient( 45deg, tomato 0%, wheat 100%);
+	border-image: linear-gradient( 45deg, tomato 0%, wheat 100%) 1 round;
+	color: black;
+	padding: 0.6em 1.6em;
+}
+
+/* defining variables in top level scop: */
+:root {
+	--btn-003-color: wheat;
+	--btn-003-font-size : 1.1rem;
+	--color-005: slateblue;
+}
+
+/* define the mixin function you'll use, notice that variables are using dollar signs ($bg)
+as this plugin uses the postcss-simple-vars to implement it's functionality  */
+@define-mixin boxmx $bg, $border {
+	border-color: $border;
+	background-color: $bg;
+	@mixin-content; /* use whatever other styles were passed in via {} as last argument */
+}
+
+
+
+.slug-002-postcss-samples {
+
+	.ex-001-nested {
+		border: 1px solid white;
+
+		span {
+			color: tomato;
+		}
+	}
+
+
+	.ex-002-btn {
+		/* reuse that pseudoclass defined above */
+		@extend ex-002-simple-button;
+	}
+
+	.ex-002-btn-2 { /* another reuse with one adjustment */
+		@extend ex-002-simple-button;
+		padding: 1rem;
+	}
+
+	/* then using the variable, via the var() function, when needed */
+	.ex-003-btn-var  {
+		@extend ex-002-simple-button;
+		background: linear-gradient( 45deg, slateblue 0%, var(--btn-003-color) 100%);
+		font-size: calc(var(--btn-003-font-size) * 2);
+	}
+
+	.ex-005-colorbox {
+		background: color(var(--btn-003-color)   a(90%));
+		color: black;
+
+	}
+
+	.ex-006-colorbox {
+		background: color(var(--btn-003-color)   a(90%));
+		color: black;
+		/* define the media query and assign it to a variable */
+		@custom-media --small-viewport (max-width: 30rem);
+
+	 /* use the variable in a media query*/
+		@media (--small-viewport) {
+			background: tomato;
+			color: white;
+		}
+	}
+
+
+	.ex-006-box {
+		/* call the mixin you defined */
+		@mixin boxmx wheat, tomato {
+		    border-style: dotted;
+				border-width: 2px;
+		}
+	}
+
+
+	/* last letter is transparency from 0 to F or 00 to ff in 6*/
+	.ex-007-rgba-hex-1 {
+		background-color: #9d90; /* completely transparent (0) . bg won't show*/
+	}
+
+	.ex-007-rgba-hex-2 {
+		background-color: #9d94; /* 0.26667 transparency*/
+	}
+
+	.ex-007-rgba-hex-3 {
+		background-color: #9d9a; /*.  0.66667 transparency*/
+	}
+
+	.ex-007-rgba-hex-4 {
+		background-color: #9d9f; /* completely opaque (1 transarency)*/
+	}
+
+	.ex-007-box {
+		@extend ex-002-simple-button;
+	}
+	/* select middle items */
+	.ex-007-box:not(:first-child, :last-child){
+		border-image: linear-gradient( 120deg, wheat 0%, tomato 100%) 1 round;
+		border-width: 3px;
+	}
+
+	.ex-007-box {
+		@extend ex-002-simple-button;
+	}
+
+	/*for this button, all states should have this color . */
+	.ex-008-btn:matches(:hover, :focus, :active) {
+	  color: #222;
+	}
+	/* all headings of sections or articles have this color */
+	:matches(section, article) :matches(h1, h2, h3, h4, h5, h6) {
+	  color: goldenrod;
+	}
+
+
+	.ex-009-box {
+		background-color: goldenrod;
+		color: white;
+		/* new minmax queries allow us to use width (rather than min-width and max-width) and use <=, >=,...*/
+		@media screen and (width >= 500px) and (width <= 1000px) {
+			background-color: tomato;
+		}
+	}
+
+	.ex-010-custom-selectors {
+
+
+	}
+
+	  /* define the variable (custom )*/
+		@custom-selector :--heading  h1, h2, h3, h4, h5, h6;
+
+		.ex-010-custom-selectors {
+			/*  use the variable as selector (selectors in this case) */
+			:--heading {
+				 border-bottom: 2px solid goldenrod;
+				 & + p {
+						border-left: 2px solid goldenrod;
+						border-right: 2px solid goldenrod;
+				}
+		 }
+	}
+
+}
